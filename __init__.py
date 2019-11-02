@@ -34,12 +34,18 @@ def inject_custom_style():
 	#					- border: 5px solid yellow;
   ruleSet = getCustomCSS()
   # Wrap style tags
-  custom_css = ''.join(['<style type="text/css">', ruleSet, '</style>'])
-  return dict(custom_css=custom_css)
+  if ruleSet is not None:
+    custom_css = ''.join(['<style type="text/css">', ruleSet, '</style>'])
+    return dict(custom_css=custom_css)
+  else:
+    return dict()
 
 def getCustomCSS():
   """Return string of any defined custom css rules from Jamla.yaml"""
   jamla = get_jamla()
+  if  jamla['theme']['options']['styles'] == []:
+    return None # Exit if no custom styles defined
+
   declarations = ''
   for style in jamla['theme']['options']['styles']:
     selector = style['selector']
