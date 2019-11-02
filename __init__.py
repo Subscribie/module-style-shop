@@ -1,5 +1,12 @@
-from flask import (Blueprint)
+from flask import (Blueprint, request, render_template, abort, flash, url_for, 
+    redirect)
 from subscribie.db import get_jamla
+from subscribie.auth import login_required
+from subscribie import current_app
+from jinja2 import TemplateNotFound
+import tinycss
+import yaml
+from flask import Markup
 
 module_style_shop = Blueprint('style_shop', __name__, template_folder='templates')
 
@@ -25,7 +32,13 @@ def inject_custom_style():
 	#				rules:
 	#					- background: black
 	#					- border: 5px solid yellow;
+  ruleSet = getCustomCSS()
+  # Wrap style tags
+  custom_css = ''.join(['<style type="text/css">', ruleSet, '</style>'])
+  return dict(custom_css=custom_css)
 
+def getCustomCSS():
+  """Return string of any defined custom css rules from Jamla.yaml"""
   jamla = get_jamla()
   declarations = ''
   for style in jamla['theme']['options']['styles']:
@@ -37,6 +50,42 @@ def inject_custom_style():
 
   # Wrap declarations with selector
   ruleSet = "{selector}{declarations}".format(selector=selector, declarations='{'+declarations+'}')
-  # Wrap style tags
-  custom_css = ''.join(['<style type="text/css">', ruleSet, '</style>'])
-  return dict(custom_css=custom_css)
+  return ruleSet
+
+@module_style_shop.route('/style_shop/index') # Define a module index page
+@module_style_shop.route('/style-shop')
+@login_required
+def style_shop():
+  try:
+    # Load custom css rules (if any) and display in an editable textbox
+    customCSS = getCustomCSS()
+    return render_template('show-custom-css.html', customCSS=customCSS, jamla=get_jamla())
+  except TemplateNotFound:
+    abort(404)
+
+@module_style_shop.route('/style-shop', methods=['POST'])
+@login_required
+def save_custom_style():
+  jamla = get_jamla()
+  # Replace jamla->theme->options->styles with new css rulesets
+  jamla['theme']['options']['styles'] = [] # Clear existing styles
+  
+  css = request.form['css']
+  parser = tinycss.make_parser('page3')
+  stylesheet = parser.parse_stylesheet(css)
+  # Parse each rule, get its rulesets, declarations and save to jamla
+  rules = []
+  for rule in stylesheet.rules:
+    selector = rule.selector.as_css()
+    # Add selector to draftJamla
+    for declaration in rule.declarations:
+      cssProperty = declaration.name
+      propertyValue = declaration.value.as_css()
+      rules.append({cssProperty:propertyValue})
+    jamla['theme']['options']['styles'].append({'selector': selector, 'rules': rules})
+
+  fp = open(current_app.config["JAMLA_PATH"], "w")
+  yaml.safe_dump(jamla, fp, default_flow_style=False)
+  flash(Markup('Styling updated. View your <a href="/">updated shop</a>'))
+    
+  return redirect(url_for('style_shop.style_shop'))
