@@ -1,11 +1,5 @@
-from flask import (Blueprint, render_template, abort, url_for, request, flash,
-                  redirect)
-from jinja2 import TemplateNotFound
-from subscribie import current_app
-from subscribie.db import get_db, get_jamla
-from subscribie.auth import login_required
-from base64 import urlsafe_b64encode, urlsafe_b64decode
-import sqlite3
+from flask import (Blueprint)
+from subscribie.db import get_jamla
 
 module_style_shop = Blueprint('style_shop', __name__, template_folder='templates')
 
