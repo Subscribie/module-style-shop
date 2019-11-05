@@ -47,16 +47,16 @@ def getCustomCSS():
     return None # Exit if no custom styles defined
 
   declarations = ''
+  ruleSets = ''
   for style in jamla['theme']['options']['styles']:
     selector = style['selector']
     for propertyValues in style['rules']:
       for cssProperty in propertyValues:
         declaration = "{cssProperty}: {propertyValue};".format(cssProperty=cssProperty, propertyValue=propertyValues[cssProperty])
       declarations += declaration
-
-  # Wrap declarations with selector
-  ruleSet = "{selector}{declarations}".format(selector=selector, declarations='{'+declarations+'}')
-  return ruleSet
+    # Wrap declarations with selector
+    ruleSets += "{selector}{declarations}".format(selector=selector, declarations='{'+declarations+'}')
+  return ruleSets
 
 @module_style_shop.route('/style_shop/index') # Define a module index page
 @module_style_shop.route('/style-shop')
