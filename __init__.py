@@ -46,9 +46,9 @@ def getCustomCSS():
   if  jamla['theme']['options']['styles'] == []:
     return None # Exit if no custom styles defined
 
-  declarations = ''
   ruleSets = ''
   for style in jamla['theme']['options']['styles']:
+    declarations = ''
     selector = style['selector']
     for propertyValues in style['rules']:
       for cssProperty in propertyValues:
