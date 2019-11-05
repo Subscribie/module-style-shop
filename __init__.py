@@ -80,15 +80,19 @@ def save_custom_style():
   parser = tinycss.make_parser('page3')
   stylesheet = parser.parse_stylesheet(css)
   # Parse each rule, get its rulesets, declarations and save to jamla
-  rules = []
+  styles = []
   for rule in stylesheet.rules:
     selector = rule.selector.as_css()
     # Add selector to draftJamla
-    for declaration in rule.declarations:
-      cssProperty = declaration.name
-      propertyValue = declaration.value.as_css()
+    rules = []
+    for rule in rule.declarations:
+      cssProperty = rule.name
+      propertyValue = rule.value.as_css()
       rules.append({cssProperty:propertyValue})
-    jamla['theme']['options']['styles'].append({'selector': selector, 'rules': rules})
+    styles.append({'selector':selector, 'rules': rules})
+  # Append each style
+  for style in styles:
+    jamla['theme']['options']['styles'].append(style)
 
   fp = open(current_app.config["JAMLA_PATH"], "w")
   yaml.safe_dump(jamla, fp, default_flow_style=False)
