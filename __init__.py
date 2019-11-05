@@ -41,7 +41,9 @@ def inject_custom_style():
     return dict()
 
 def getCustomCSS():
-  """Return string of any defined custom css rules from Jamla.yaml"""
+  """Return css string of the defined custom css rules in Jamla.yaml"""
+  # For naming conventions see:
+  # https://developer.mozilla.org/en-US/docs/Learn/Getting_started_with_the_web/CSS_basics
   jamla = get_jamla()
   if  jamla['theme']['options']['styles'] == []:
     return None # Exit if no custom styles defined
