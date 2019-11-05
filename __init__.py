@@ -81,11 +81,11 @@ def save_custom_style():
   stylesheet = parser.parse_stylesheet(css)
   # Parse each rule, get its rulesets, declarations and save to jamla
   styles = []
-  for rule in stylesheet.rules:
-    selector = rule.selector.as_css()
+  for ruleSet in stylesheet.rules:
+    selector = ruleSet.selector.as_css()
     # Add selector to draftJamla
     rules = []
-    for rule in rule.declarations:
+    for rule in ruleSet.declarations:
       cssProperty = rule.name
       propertyValue = rule.value.as_css()
       rules.append({cssProperty:propertyValue})
