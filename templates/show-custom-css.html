@@ -4,75 +4,48 @@
   {{ title }}
 {% endblock title %}
 
-{% block hero %}
-
-    <h1 class="title is-1 has-text-white has-text-centered is-size-3-mobile">Style Your Shop</h1>
-
-{% endblock hero %}
-
 {% block body %}
 
-<div style="padding: 1rem 1.5rem 0 1.5rem;">
-  <div class="container">
-    <nav class="breadcrumb" aria-label="breadcrumbs">
-      <ul>
-        <p>You're here: </p>
-        <li><a href="{{ url_for("admin.dashboard") }}">Dashboard</a></li>
-        <li class="is-active"><a href="#" aria-current="page">{{ title }}</a></li>
-      </ul>
-    </nav>
-  </div>
+<h2 class="text-center text-dark mb-3">Style Your Shop</h2>
+
+<div class="container">
+  <ul class="breadcrumb">
+    <li class="breadcrumb-item"><a href="/">Shop</a></li>
+    <li class="breadcrumb-item"><a href="{{ url_for('admin.dashboard') }}">Manage My Shop</a></li>   
+    <li class="breadcrumb-item active" aria-current="page">Style Shop</li>
+  </ul>
 </div>
 
-<div class="section">
-  <div class="container">
+<main>
+  <div class="section">
+    <div class="container">
 
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul>
+        {% for message in messages %}
+          <li>{{ message|safe }}</li>
+        {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
 
-  {% with messages = get_flashed_messages() %}
-    {% if messages %}
-      <ul>
-      {% for message in messages %}
-        <li>{{ message|safe }}</li>
-      {% endfor %}
-      </ul>
-    {% endif %}
-  {% endwith %}
+    <h3>How to</h3>
+    <p class="card-subtitle mb-3 text-muted">Enter or paste in cusom css styling for your shop below:</p>
 
-  <h2 class="title is-3">How to</h2>
+    <hr>
 
-  <p class="subtitle is-5">
-  Enter or paste in cusom css styling for your shop below:
-  </p>
+    <form action="#" method="POST"> 
+      <textarea name="css" cols="100" rows="20" class="form-control">
+      {{ customCSS }}
+      </textarea>
 
-  <form action="#" method="POST"> 
-    <textarea name="css" cols="100" rows="20">
-    {{ customCSS }}
-    </textarea>
-    <br />
-    <input type="submit" value="Save" class="button is-fullwidth is-info"/>
-  </form>
+      <input type="submit" value="Save" class="btn btn-primary btn-block col-md-6 my-3 mx-auto">
+    </form>
 
-  </div><!-- end container -->
-</div><!-- end section -->
-
-<style type="text/css">
-textarea {
-    background: #f4f4f4;
-    border: 1px solid #ddd;
-    border-left: 3px solid #f36d33;
-    color: #666;
-    page-break-inside: avoid;
-    font-family: monospace;
-    font-size: 15px;
-    line-height: 1.6;
-    margin-bottom: 1.6em;
-    max-width: 100%;
-    overflow: auto;
-    padding: 1em 1.5em;
-    display: block;
-    word-wrap: break-word;
-}
-</style>
+    </div><!-- end container -->
+  </div><!-- end section -->
+</main>
 
 
 {% endblock body %}

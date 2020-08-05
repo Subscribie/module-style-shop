@@ -1,6 +1,6 @@
 from flask import (Blueprint, request, render_template, abort, flash, url_for, 
     redirect)
-from subscribie.db import get_jamla
+
 from subscribie.auth import login_required
 from subscribie import current_app
 from jinja2 import TemplateNotFound
@@ -44,7 +44,7 @@ def getCustomCSS():
   """Return css string of the defined custom css rules in Jamla.yaml"""
   # For naming conventions see:
   # https://developer.mozilla.org/en-US/docs/Learn/Getting_started_with_the_web/CSS_basics
-  jamla = get_jamla()
+  return ''
   if  jamla['theme']['options']['styles'] == []:
     return None # Exit if no custom styles defined
 
@@ -67,14 +67,16 @@ def style_shop():
   try:
     # Load custom css rules (if any) and display in an editable textbox
     customCSS = getCustomCSS()
-    return render_template('show-custom-css.html', customCSS=customCSS, jamla=get_jamla())
+    return render_template('show-custom-css.html', customCSS=customCSS)
   except TemplateNotFound:
     abort(404)
 
 @module_style_shop.route('/style-shop', methods=['POST'])
 @login_required
 def save_custom_style():
-  jamla = get_jamla()
+  flash(Markup('Styling updated. View your <a href="/">updated shop</a>'))
+
+  return redirect(url_for('style_shop.style_shop'))
   # Replace jamla->theme->options->styles with new css rulesets
   jamla['theme']['options']['styles'] = [] # Clear existing styles
   
